@@ -5,10 +5,11 @@ const keys = require('../config/keys');
 
 const User = mongoose.model('User');
 
+// id 가져오기
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
-
+// id 받았을 때 유저 정보 가져오기
 passport.deserializeUser((id, done) => {
   User.findById(id).then(user => {
     done(null, user);
@@ -26,16 +27,16 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
       try {
         const existingUser = await User.findOne({ googleId: profile.id });
-        if (existingUser) {
-          return done(null, existingUser);
+        if (existingUser) { // 이미 등록된 유저
+          return done(null, existingUser); 
         }
-        const user = await new User({
+        const user = await new User({ // 새 유저
           googleId: profile.id,
           displayName: profile.displayName
         }).save();
         done(null, user);
       } catch (err) {
-        done(err, null);
+        done(err, null); 
       }
     }
   )
